@@ -3,7 +3,6 @@
 // 
 namespace Assets.Xbox_Live.Editor
 {
-    using System;
     using System.IO;
     using System.Xml;
     using System.Xml.Linq;
@@ -11,52 +10,18 @@ namespace Assets.Xbox_Live.Editor
 
     using Microsoft.Xbox.Services;
 
-    using SyntaxTree.VisualStudio.Unity.Bridge;
-
     using UnityEditor;
     using UnityEditor.Callbacks;
 
     using UnityEngine;
 
     /// <summary>
-    /// Handles post processing the generated Visaul Studio projects in order to deal with DevCenter
+    /// Handles post processing the generated Visual Studio projects in order to deal with DevCenter
     /// association and including Xbox Live configuration files.
     /// </summary>
     [InitializeOnLoad]
     public class XboxLivePostProcessing
     {
-        static XboxLivePostProcessing()
-        {
-            ProjectFilesGenerator.ProjectFileGeneration += AddXboxServicesConfig;
-        }
-
-        /// <summary>
-        /// Adds the XboxServices.config file to the generated project file.
-        /// </summary>
-        /// <param name="fileName">The name of the file being processed.</param>
-        /// <param name="fileContent">The content of the file being processed.</param>
-        /// <returns>The project file with an additional content element included.</returns>
-        /// <remarks>
-        /// This only modifies the Unity debug projects and will not have any
-        /// effect on projects built as part of the Unity UWP build process.
-        /// </remarks>
-        private static string AddXboxServicesConfig(string fileName, string fileContent)
-        {
-            if (!fileName.EndsWith(".Editor.csproj"))
-            {
-                const string configFileElement =
-                    "    <Content Include=\"" + XboxLiveAppConfiguration.FileName + "\">\r\n" +
-                    "       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>\r\n" +
-                    "    </Content>\r\n";
-
-                // Hacky way to do this for now.  Should make it a bit more stable.
-                int lastItemGroup = fileContent.LastIndexOf("  </ItemGroup>", StringComparison.OrdinalIgnoreCase);
-                fileContent = fileContent.Insert(lastItemGroup, configFileElement);
-            }
-
-            return fileContent;
-        }
-
         [PostProcessBuild(1)]
         public static void OnPostprocessBuild(BuildTarget target, string solutionFolder)
         {
